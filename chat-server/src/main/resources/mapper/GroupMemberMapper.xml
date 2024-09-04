@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sen.chat.chatserver.dao.GroupMemberDAO">
+    <delete id="deleteByPrimaryKey">
+        delete
+        from tbas_group_user_relation
+        where group_id = #{groupId}
+          and uid = #{uid}
+    </delete>
+
+    <select id="selectByGroupId" resultType="com.sen.chat.chatserver.entity.RoomGroupDO" databaseId="mysql">
+        select *
+        from tbas_room_group
+        where group_id = #{groupId}
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer" databaseId="mysql">
+        select count(1)
+        from tbas_group_user_relation
+        <where>
+            <if test="query.groupId != null">
+                and group_id = #{query.groupId}
+            </if>
+            <if test="query.uid != null">
+                and uid = #{query.uid}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectList" resultType="com.sen.chat.chatserver.entity.GroupUserRelationDO" databaseId="mysql">
+        select *
+        from tbas_group_user_relation
+        <where>
+            <if test="query.groupId != null">
+                and group_id = #{query.groupId}
+            </if>
+            <if test="query.role != null">
+                and role = #{query.role}
+            </if>
+            <if test="query.roles != null">
+                and role in  (
+                <foreach collection="query.roles" item="item" separator=",">
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </where>
+    </select>
+    <select id="queryMemberList" resultType="com.sen.chat.chatserver.entity.GroupMemberDO">
+        select u.*
+        from tbas_group_user_relation g
+                 left join tusr_userinfo u on g.uid = u.uid
+        where group_id = #{groupId}
+        order by g.create_time asc
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.sen.chat.chatserver.entity.GroupUserRelationDO">
+        select *
+        from tbas_group_user_relation
+        where group_id = #{groupId}
+          and uid = #{uid}
+    </select>
+
+</mapper>

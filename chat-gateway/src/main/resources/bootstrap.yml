@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: chat-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://localhost:8848
+      config:
+        server-addr: http://localhost:8848
+        file-extension: yaml

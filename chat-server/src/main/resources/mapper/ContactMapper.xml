@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sen.chat.chatserver.dao.ContactDAO">
+    <update id="updateBatch">
+        insert into tbas_contact(room_id, uid, last_msg_id, active_time)
+        values
+        <foreach collection="memberUidList" item="uid" separator=",">
+            (#{roomId},#{uid},#{msgId},#{msgTime})
+        </foreach>
+        on DUPLICATE KEY UPDATE
+        last_msg_id = values(last_msg_id),
+        active_time = values(active_time)
+    </update>
+    <delete id="deleteByRoomIdAndUid">
+        delete
+        from tbas_contact
+        where uid = #{uid}
+          and room_id = #{roomId}
+    </delete>
+
+    <select id="selectCount" resultType="java.lang.Integer" databaseId="mysql">
+        select count(1)
+        from tbas_room_group
+        <where>
+            <if test="query.groupOwnerUid != null">
+                group_owner_id = #{query.groupOwnerUid}
+            </if>
+            <if test="query.status != null">
+                status = #{query.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectList" resultType="com.sen.chat.chatserver.entity.ContactDO" databaseId="mysql">
+        select *
+        from tbas_contact
+        <where>
+            <if test="query.uid != null">
+                uid = #{query.uid}
+            </if>
+        </where>
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.sen.chat.chatserver.entity.ContactDO">
+        select *
+        from tbas_contact
+        where uid = #{uid}
+          and room_id = #{roomId}
+    </select>
+    <select id="queryContactInfo" resultType="com.sen.chat.chatserver.entity.ContactInfoDO">
+        select c.*, gr.group_name, user.user_name
+        from tbas_contact c
+                 left join tbas_room_group gr on gr.group_id = c.contact_id
+                 left join tusr_userinfo user on user.uid = c.contact_id
+        where c.uid = #{uid}
+            and (c.contact_type = 1 and gr.group_name like concat('%', concat(#{searchText}, '%')))
+           or (c.contact_type = 2 and user.user_name like concat('%', concat(#{searchText}, '%')))
+    </select>
+    <select id="selectByContactId" resultType="com.sen.chat.chatserver.entity.ContactDO">
+        select *
+        from tbas_contact
+        where contact_id = #{contactId}
+          and contact_type = #{contactType}
+          and uid = #{uid}
+    </select>
+
+</mapper>

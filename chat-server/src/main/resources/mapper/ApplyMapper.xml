@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sen.chat.chatserver.dao.ApplyDAO">
+    <insert id="insertBatch">
+        insert into
+        tusr_apply(apply_id, apply_uid, receive_uid, last_apply_time, status, apply_info, apply_type, group_id,
+        create_time,update_time)
+        values
+        <foreach collection="applyDOS" item="item" separator=",">
+            (#{item.applyId},#{item.applyUid},#{item.receiveUid},#{item.lastApplyTime},#{item.status},#{item.applyInfo},
+            #{item.applyType},
+            #{item.groupId},
+            now(),now())
+        </foreach>
+    </insert>
+    <update id="updateStatus">
+        update tusr_apply
+        set status      = #{destStatus},
+            opt_uid     = #{optUid},
+            update_time = now()
+        where apply_id = #{applyId}
+          and status = #{srcStatus}
+    </update>
+    <update id="updateGroupStatus">
+        update tusr_apply
+        set status      = #{destStatus},
+            opt_uid     = #{optUid},
+            update_time = now()
+        where apply_uid = #{applyUid}
+          and group_id = #{groupId}
+          and last_apply_time = #{lastApplyTime}
+          and status = #{srcStatus}
+    </update>
+
+    <select id="selectCount" resultType="java.lang.Integer" databaseId="mysql">
+        select count(1)
+        from tusr_apply
+        <where>
+            <if test="query.applyUid != null">
+                and apply_uid = #{query.applyUid}
+            </if>
+            <if test="query.applyType != null">
+                and apply_type = #{query.applyType}
+            </if>
+            <if test="query.receiveUid != null">
+                and receive_uid = #{query.receiveUid}
+            </if>
+            <if test="query.status != null">
+                and status = #{query.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectList" resultType="com.sen.chat.chatserver.entity.ContactDO" databaseId="mysql">
+        select *
+        from tbas_contact
+        <where>
+            <if test="query.uid != null">
+                uid = #{query.uid}
+            </if>
+        </where>
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.sen.chat.chatserver.entity.ApplyDO">
+        select *
+        from tusr_apply
+        where apply_id = #{applyId}
+    </select>
+    <select id="selectPage" resultType="com.sen.chat.chatserver.entity.ApplyDO">
+        select *
+        from tusr_apply
+        <where>
+            <if test="query.applyUid != null">
+                and apply_uid = #{query.applyUid}
+            </if>
+            <if test="query.applyType != null">
+                and apply_type = #{query.applyType}
+            </if>
+            <if test="query.receiveUid != null">
+                and receive_uid = #{query.receiveUid}
+            </if>
+            <if test="query.status != null">
+                and status = #{query.status}
+            </if>
+        </where>
+    </select>
+
+</mapper>

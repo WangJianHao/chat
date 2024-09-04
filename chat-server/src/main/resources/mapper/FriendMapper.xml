@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sen.chat.chatserver.dao.FriendDAO">
+
+    <select id="selectCount" resultType="java.lang.Integer" databaseId="mysql">
+        select count(1)
+        from tbas_room_group
+        <where>
+            <if test="query.groupOwnerUid != null">
+                group_owner_id = #{query.groupOwnerUid}
+            </if>
+            <if test="query.status != null">
+                status = #{query.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectList" resultType="com.sen.chat.chatserver.entity.ContactDO" databaseId="mysql">
+        select *
+        from tbas_contact
+        <where>
+            <if test="query.uid != null">
+                uid = #{query.uid}
+            </if>
+        </where>
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.sen.chat.chatserver.entity.ContactDO">
+        select *
+        from tbas_contact
+        where uid = #{uid}
+          and room_id = #{roomId}
+    </select>
+    <select id="selectByRoomId" resultType="com.sen.chat.chatserver.entity.FriendDO">
+        select *
+        from tusr_friend
+        where room_id = #{roomId}
+          and uid = #{uid}
+    </select>
+
+</mapper>

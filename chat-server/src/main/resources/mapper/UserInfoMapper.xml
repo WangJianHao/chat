@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sen.chat.chatserver.dao.UserInfoDAO">
+
+    <resultMap id="BaseResultMap" type="com.sen.chat.chatserver.entity.UserInfoDO">
+        <id column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="head_icon" jdbcType="VARCHAR" property="headIcon"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="last_login_time" jdbcType="TIMESTAMP" property="lastLoginTime"/>
+    </resultMap>
+
+    <select id="selectByUid" resultType="com.sen.chat.chatserver.entity.UserInfoDO" databaseId="mysql">
+        select *
+        from tusr_userinfo
+        where uid = #{uid}
+    </select>
+    <select id="selectList" resultType="com.sen.chat.chatserver.entity.UserInfoDO" databaseId="mysql">
+        select *
+        from tusr_userinfo
+        <where>
+            <if test="query.email != null">
+                email = #{query.email}
+            </if>
+        </where>
+    </select>
+    <select id="selectByUidWithLoginInfo" resultType="com.sen.chat.chatserver.dto.UserInfoDTO">
+        select user.*, login.ip_info, login.last_opt_time, login.last_off_time, login.active_status
+        from tusr_userinfo user
+                 left join tusr_logininfo login on user.uid = login.uid
+        where user.uid = #{uid}
+    </select>
+
+</mapper>

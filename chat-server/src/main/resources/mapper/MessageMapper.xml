@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sen.chat.chatserver.dao.MessageDAO">
+
+    <resultMap id="BaseResultMap" type="com.sen.chat.chatserver.entity.MessageDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="room_id" jdbcType="BIGINT" property="roomId"/>
+        <result column="from_uid" jdbcType="BIGINT" property="fromUid"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="reply_msg_id" jdbcType="BIGINT" property="replyMsgId"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="gap_count" jdbcType="INTEGER" property="gapCount"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="extra" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler" property="extra"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectCount" resultType="java.lang.Integer" databaseId="mysql">
+        select count(*)
+        from tchat_message
+        <where>
+            <if test="query.groupOwnerUid != null">
+                and group_owner_uid = #{query.groupOwnerUid}
+            </if>
+            <if test="query.status != null">
+                and status = #{query.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectList" resultType="com.sen.chat.chatserver.entity.RoomGroupDO" databaseId="mysql">
+        select *
+        from tbas_room_group
+        <where>
+            <if test="query.email != null">
+                email = #{query.email}
+            </if>
+        </where>
+    </select>
+    <select id="getGapCount" resultType="java.lang.Integer">
+        select count(*)
+        from tchat_message
+        where room_id = #{roomId}
+        and id > #{fromId}
+        and id &lt;= #{toId}
+    </select>
+    <select id="selectById" resultMap="BaseResultMap">
+        select *
+        from tchat_message
+        where id = #{msgId}
+    </select>
+
+</mapper>
